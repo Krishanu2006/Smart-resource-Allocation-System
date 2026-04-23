@@ -18,6 +18,7 @@ const DataCollection = () => {
       window.removeEventListener("offline", updateStatus);
     };
   }, []);
+
   useEffect(() => {
     console.log("ENV VARIABLES:", import.meta.env);
     console.log("API_BASE:", API_BASE);
@@ -52,7 +53,7 @@ const DataCollection = () => {
         body: formData,
       });
 
-      console.log("Response status:", res.status);
+      console.log("📡 Response status:", res.status);
 
       if (!res.ok) {
         const errorText = await res.text();
