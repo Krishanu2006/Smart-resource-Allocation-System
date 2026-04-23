@@ -2,26 +2,14 @@
 uvicorn[standard]==0.35.0
 pydantic==2.11.7
 
-# Database
 SQLAlchemy==2.0.41
 psycopg2-binary==2.9.11
 
-# Auth & security
+python-dotenv==1.1.1
+python-multipart==0.0.20
+
 passlib==1.7.4
 python-jose==3.5.0
 
-# Config & env
-python-dotenv==1.1.1
-
-# Forms / file upload
-python-multipart==0.0.20
-
-# HTTP client (if you call APIs)
 httpx==0.28.1
-
-# Data handling (keep only if used)
-pandas==2.3.0
-numpy==2.2.6
-
-# Production server
 gunicorn==25.3.0
