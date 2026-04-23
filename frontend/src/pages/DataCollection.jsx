@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./DataCollection.css";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const API_BASE = import.meta.env.VITE_APP_BASE_URL;
 
 const DataCollection = () => {
   const [activeTab, setActiveTab] = useState("upload"); 
