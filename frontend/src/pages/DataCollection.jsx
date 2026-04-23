@@ -1,30 +1,42 @@
 import React, { useState, useEffect } from "react";
 import "./DataCollection.css";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const API_BASE = import.meta.env.VITE_APP_BASE_URL;
 
 const DataCollection = () => {
-  const [activeTab, setActiveTab] = useState("upload"); 
-  const [isOnline, setIsOnline] = useState(navigator.onLine); 
-  const [isRecording, setIsRecording] = useState(false); 
-  const [showPreview, setShowPreview] = useState(false); 
-  const [progress, setProgress] = useState(0); 
-  const [transcript, setTranscript] = useState("");
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [showPreview, setShowPreview] = useState(false);
+  const [progress, setProgress] = useState(0);
 
-  useEffect(() => { 
-    const updateStatus = () => setIsOnline(navigator.onLine); 
-    window.addEventListener("online", updateStatus); 
-    window.addEventListener("offline", updateStatus); 
+  useEffect(() => {
+    const updateStatus = () => setIsOnline(navigator.onLine);
+    window.addEventListener("online", updateStatus);
+    window.addEventListener("offline", updateStatus);
 
-    return () => { 
-      window.removeEventListener("online", updateStatus); 
-      window.removeEventListener("offline", updateStatus); 
-    }; 
+    return () => {
+      window.removeEventListener("online", updateStatus);
+      window.removeEventListener("offline", updateStatus);
+    };
   }, []);
-  
+  useEffect(() => {
+    console.log("ENV VARIABLES:", import.meta.env);
+    console.log("API_BASE:", API_BASE);
+
+    if (!API_BASE) {
+      console.error("API_BASE is undefined. Check Vercel env variables.");
+    }
+  }, []);
+
   const handleFile = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    if (!API_BASE) {
+      console.error("Backend URL not defined");
+      return;
+    }
+
+    console.log("Selected file:", file);
 
     setShowPreview(true);
     setProgress(0);
@@ -33,17 +45,24 @@ const DataCollection = () => {
     formData.append("file", file);
 
     try {
+      console.log("Sending request to:", `${API_BASE}/upload/`);
+
       const res = await fetch(`${API_BASE}/upload/`, {
         method: "POST",
         body: formData,
       });
 
-      if (!res.ok) throw new Error("Upload failed");
+      console.log("Response status:", res.status);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Server error:", errorText);
+        throw new Error("Upload failed");
+      }
 
       const data = await res.json();
-      console.log("Uploaded:", data);
+      console.log("Upload success:", data);
 
-      // Simulated progress
       let p = 0;
       const interval = setInterval(() => {
         p += 20;
@@ -52,15 +71,15 @@ const DataCollection = () => {
       }, 100);
 
     } catch (error) {
-      console.error("Upload failed", error);
+      console.error("Upload failed:", error);
     }
   };
 
   return (
     <div className="app">
       {!isOnline && (
-        <div className="offline-indicator"> 
-          📴 Offline Mode — Changes saved locally 
+        <div className="offline-indicator">
+          Offline Mode — Changes saved locally
         </div>
       )}
 
@@ -70,7 +89,7 @@ const DataCollection = () => {
           <p>Data Collection Module — Step 1</p>
         </header>
 
-        <h1>File Upload</h1>
+        <h2>File Upload</h2>
 
         <input
           type="file"
